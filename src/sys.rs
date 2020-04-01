@@ -7,7 +7,7 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread::{sleep, spawn, JoinHandle};
 use std::time::Duration;
 
-/// Sends cpu usage via channel every duration (sends nothing during first duration)
+/// Sends CPU usage in percent via channel every duration (sends nothing during first duration)
 pub fn cpu_usage(duration: Duration) -> (Receiver<f64>, JoinHandle<Result<(), Fail>>) {
     // create channel
     let (tx, rc): (Sender<f64>, Receiver<f64>) = channel();
@@ -40,7 +40,7 @@ pub fn cpu_usage(duration: Duration) -> (Receiver<f64>, JoinHandle<Result<(), Fa
     (rc, thread)
 }
 
-// get cpu idle and total time from /proc/stat
+/// Get CPU idle and total time from /proc/stat
 fn read_cpu_times() -> Result<(u64, u64), Fail> {
     // open file
     let mut file = OpenOptions::new()
