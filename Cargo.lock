@@ -2,9 +2,9 @@
 # It is not intended for manual editing.
 [[package]]
 name = "kern"
-version = "1.1.3"
+version = "1.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ea2ea2b14147510d1b37247b99a73e761b934890d7f54d75f3eeda27b0c8a7b"
+checksum = "fd18ac119c33371c24abef4cfbc07ac156fb7e944d7a3f3c36817c675561bff5"
 
 [[package]]
 name = "monirs"
