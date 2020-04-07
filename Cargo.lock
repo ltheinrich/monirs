@@ -8,7 +8,7 @@ checksum = "fd18ac119c33371c24abef4cfbc07ac156fb7e944d7a3f3c36817c675561bff5"
 
 [[package]]
 name = "monirs"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "kern",
 ]

@@ -1,6 +1,6 @@
 [package]
 name = "monirs"
-version = "0.0.0"
+version = "0.0.1"
 authors = ["Lennart Heinrich <lennart@ltheinrich.de>"]
 edition = "2018"
 license = "ISC"
