@@ -2,3 +2,5 @@
 
 # Monirs
 Linux monitoring software written in Rust
+
+Currently unmaintained
