@@ -9,7 +9,7 @@ description = "Linux monitoring software"
 readme = "README.md"
 
 [dependencies]
-kern = "1.1.4"
+kern = "1.5.1"
 
 [profile.release]
 lto = true
