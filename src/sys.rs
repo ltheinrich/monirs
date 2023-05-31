@@ -8,7 +8,7 @@ use std::thread::{sleep, spawn, JoinHandle};
 use std::time::Duration;
 
 /// Sends CPU usage in percent via channel every duration (sends nothing during first duration)
-pub fn cpu_usage(duration: Duration) -> (Receiver<f64>, JoinHandle<Result<(), Fail>>) {
+pub fn cpu_usage(duration: Duration) -> (Receiver<f64>, JoinHandle<Result<(), Box<Fail>>>) {
     // create channel
     let (tx, rc): (Sender<f64>, Receiver<f64>) = channel();
 
@@ -27,7 +27,7 @@ pub fn cpu_usage(duration: Duration) -> (Receiver<f64>, JoinHandle<Result<(), Fa
 
             // calculate cpu usage and send
             let cpu_usage = ((1.0 - dif_idle / dif_total) * 10000.0).round() / 100.0;
-            tx.send(cpu_usage).or_else(Fail::from)?;
+            tx.send(cpu_usage).or_else(|err| Err(Fail::new(err)))?;
 
             // set previous times and wait next second
             prev_idle = idle;
@@ -41,16 +41,17 @@ pub fn cpu_usage(duration: Duration) -> (Receiver<f64>, JoinHandle<Result<(), Fa
 }
 
 /// Get CPU idle and total time from /proc/stat
-fn read_cpu_times() -> Result<(u64, u64), Fail> {
+fn read_cpu_times() -> Result<(u64, u64), Box<Fail>> {
     // open file
     let mut file = OpenOptions::new()
         .read(true)
         .open("/proc/stat")
-        .or_else(Fail::from)?;
+        .or_else(|err| Err(Fail::new(err)))?;
 
     // read file
     let mut buf = String::new();
-    file.read_to_string(&mut buf).or_else(Fail::from)?;
+    file.read_to_string(&mut buf)
+        .or_else(|err| Err(Fail::new(err)))?;
 
     // only first line
     buf = {
@@ -62,7 +63,7 @@ fn read_cpu_times() -> Result<(u64, u64), Fail> {
 
         // line should be at least 10 characters
         if line.len() < 10 {
-            return Fail::from("broken /proc/stat");
+            return Err(Fail::new("broken /proc/stat"));
         }
 
         // cut "cpu  "
@@ -71,12 +72,12 @@ fn read_cpu_times() -> Result<(u64, u64), Fail> {
 
     // split by whitespace and get idle time
     let split: Vec<&str> = buf.split_ascii_whitespace().collect();
-    let idle: u64 = split[3].parse().or_else(Fail::from)?;
+    let idle: u64 = split[3].parse().or_else(|err| Err(Fail::new(err)))?;
 
     // calculate total from all times
     let mut total = 0u64;
     for s in split {
-        total += s.parse::<u64>().or_else(Fail::from)?;
+        total += s.parse::<u64>().or_else(|err| Err(Fail::new(err)))?;
     }
 
     // return idle and total time
