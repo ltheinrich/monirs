@@ -10,6 +10,7 @@ readme = "README.md"
 
 [dependencies]
 kern = "1.6.0"
+chrono = "0.4.26"
 
 [profile.release]
 lto = true
