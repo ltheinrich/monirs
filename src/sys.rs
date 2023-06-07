@@ -27,7 +27,7 @@ pub fn cpu_usage(duration: Duration) -> (Receiver<f64>, JoinHandle<Result<(), Bo
 
             // calculate cpu usage and send
             let cpu_usage = ((1.0 - dif_idle / dif_total) * 10000.0).round() / 100.0;
-            tx.send(cpu_usage).or_else(|err| Err(Fail::new(err)))?;
+            tx.send(cpu_usage).map_err(Fail::new)?;
 
             // set previous times and wait next second
             prev_idle = idle;
@@ -46,12 +46,11 @@ fn read_cpu_times() -> Result<(u64, u64), Box<Fail>> {
     let mut file = OpenOptions::new()
         .read(true)
         .open("/proc/stat")
-        .or_else(|err| Err(Fail::new(err)))?;
+        .map_err(Fail::new)?;
 
     // read file
     let mut buf = String::new();
-    file.read_to_string(&mut buf)
-        .or_else(|err| Err(Fail::new(err)))?;
+    file.read_to_string(&mut buf).map_err(Fail::new)?;
 
     // only first line
     buf = {
@@ -67,17 +66,17 @@ fn read_cpu_times() -> Result<(u64, u64), Box<Fail>> {
         }
 
         // cut "cpu  "
-        (&line[5..line.len()]).to_string()
+        line[5..line.len()].to_string()
     };
 
     // split by whitespace and get idle time
     let split: Vec<&str> = buf.split_ascii_whitespace().collect();
-    let idle: u64 = split[3].parse().or_else(|err| Err(Fail::new(err)))?;
+    let idle: u64 = split[3].parse().map_err(Fail::new)?;
 
     // calculate total from all times
     let mut total = 0u64;
     for s in split {
-        total += s.parse::<u64>().or_else(|err| Err(Fail::new(err)))?;
+        total += s.parse::<u64>().map_err(Fail::new)?;
     }
 
     // return idle and total time
