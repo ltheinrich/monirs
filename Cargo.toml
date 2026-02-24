@@ -10,7 +10,7 @@ readme = "README.md"
 
 [dependencies]
 kern = "1.8.3"
-chrono = { version = "0.4.43", default-features = false, features = ["clock"] }
+chrono = { version = "0.4.44", default-features = false, features = ["clock"] }
 
 [profile.release]
 lto = true
